@@ -11,7 +11,6 @@ using Short = uint16_t;
 using Byte = uint8_t;
 
 Short SP;
-
 Short PC;
 
 Byte A;
@@ -27,9 +26,11 @@ Byte L;
 int c_cycles;
 int m_cycles;
 
-CPU::CPU()
+CPU::CPU(Bus& bus_ref):bus(bus_ref)
 {
+    
     PC = 0x100;
+    
 
 }
 
@@ -217,4 +218,179 @@ bool CPU::get_carry()
 
 void CPU::reset_carry(){
     F = F & 0xEF;
+}
+
+
+void CPU::write_r8(Byte reg, Byte data){
+    if(reg == 0x06){
+        bus.write_memory(data, get_16bitreg(Reg16::HL));
+    }
+    else{
+        set_8bitreg(reg, data);
+    }
+    
+}
+
+void CPU::write_r16(Byte reg, Short data){
+    switch(reg){
+        case 0x00:
+            set_16bitreg(Reg16::BC, data);
+            break;
+        case 0x01:
+            set_16bitreg(Reg16::DE, data);
+            break;
+        case 0x02:
+            set_16bitreg(Reg16::HL, data);
+            break;
+        case 0x03:
+            SP = data;
+            break;
+    }
+}
+
+void CPU::write_r16_stk(Byte reg){
+    Short data = 0x0000;
+    data |= bus.read_memory(SP);
+    SP++;
+    data |= bus.read_memory(SP) << 8;
+    SP++;
+
+    switch(reg){
+        case 0x00:
+            set_16bitreg(Reg16::BC, data);
+            break;
+        case 0x01:
+            set_16bitreg(Reg16::DE, data);
+            break;
+        case 0x02:
+            set_16bitreg(Reg16::HL, data);
+            break;
+        case 0x03:
+            set_16bitreg(Reg16::AF, data);
+            break;
+    }
+  
+}
+
+
+void CPU::write_r16_mem(Byte reg, Byte data){
+    Short memory_addr;
+    switch (reg){
+        case 0x00:
+            memory_addr = get_16bitreg(Reg16::BC);
+            bus.write_memory(memory_addr, data);
+            break;
+        case 0x01:
+            memory_addr = get_16bitreg(Reg16::DE);
+            bus.write_memory(memory_addr, data);
+            break;
+        case 0x02:
+            memory_addr = get_16bitreg(Reg16::HL);
+            bus.write_memory(memory_addr, data);
+            set_16bitreg(Reg16::HL, get_16bitreg(Reg16::HL) + 1);
+            break;
+        case 0x03:    
+            memory_addr = get_16bitreg(Reg16::HL);
+            bus.write_memory(memory_addr, data);
+            set_16bitreg(Reg16::HL, get_16bitreg(Reg16::HL) - 1);
+            break;
+    }
+ 
+}
+
+
+
+Byte CPU::read_r8(Byte reg){
+    if(reg == 0x06){
+        return bus.read_memory(get_16bitreg(Reg16::HL));
+    }
+    else{
+        return get_8bitreg(reg);
+    }
+
+}
+
+
+Short CPU::read_r16(Byte reg){
+    Short value;
+    switch(reg){
+        case 0x00:
+            value = get_16bitreg(Reg16::BC);
+            break;
+        case 0x01:
+            value = get_16bitreg(Reg16::DE);
+            break;
+        case 0x02:
+            value = get_16bitreg(Reg16::HL);
+            break;
+        case 0x03:
+            value = SP;
+            break;
+    }
+    return value;
+
+}
+
+
+Short CPU::read_r16_stk(Byte reg){
+    Short value_16;
+    switch(reg){
+        case 0x00:
+            value_16 = get_16bitreg(Reg16::BC);
+            break;
+        case 0x01:
+            value_16 = get_16bitreg(Reg16::DE);
+            break;
+        case 0x02:
+            value_16 = get_16bitreg(Reg16::HL);
+            break;
+        case 0x03:
+            value_16 = get_16bitreg(Reg16::AF);
+            break;
+    }
+    Byte high_byte = (value_16 >>8 ) & 0xFF;
+    Byte low_byte = (value_16) & 0xFF;
+    bus.write_memory(SP, high_byte);
+    SP--;
+    bus.write_memory(SP, high_byte);
+    SP--;
+    return value_16;
+}
+
+
+Byte CPU::read_r16_mem(Byte reg){
+    Short memory_addr;
+    Byte value;
+    switch (reg){
+        case 0x00:
+            memory_addr = get_16bitreg(Reg16::BC);
+            value = bus.read_memory(memory_addr);
+            break;
+        case 0x01:
+            memory_addr = get_16bitreg(Reg16::DE);
+            value = bus.read_memory(memory_addr);
+            break;
+        case 0x02:
+            memory_addr = get_16bitreg(Reg16::HL);
+            value = bus.read_memory(memory_addr);
+            set_16bitreg(Reg16::HL, get_16bitreg(Reg16::HL) + 1);
+            break;
+        case 0x03:    
+            memory_addr = get_16bitreg(Reg16::HL);
+            value = bus.read_memory(memory_addr);
+            set_16bitreg(Reg16::HL, get_16bitreg(Reg16::HL) - 1);
+            break;
+    }
+    return value;
+
+}
+
+void CPU::inc_pc(){
+    PC ++;
+}
+
+Byte CPU::read_imm8(){
+    Byte value = bus.read_memory(PC);
+    inc_pc();
+    return value;
 }

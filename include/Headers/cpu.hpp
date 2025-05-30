@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "bitw.hpp"
+#include "bus.hpp"
 
 using Short = uint16_t;
 using Byte = uint8_t;
@@ -34,8 +35,9 @@ public:
 
     int c_cycles;
     int m_cycles;
+    Bus& bus;
 
-    CPU();
+    CPU(Bus& bus_ref);
     public:
     /**
      * 
@@ -85,8 +87,41 @@ public:
     void set_carry();
     bool get_carry();
     void reset_carry();
+
+
+     void write_r8(Byte reg, Byte data);
+    void write_r16(Byte reg, Short data);
+    void write_r16_stk(Byte reg);
+    void write_r16_mem(Byte reg, Byte data);
+    Byte read_r8(Byte reg);
+    Short read_r16(Byte reg);
+    Short read_r16_stk(Byte reg);
+    Byte read_r16_mem(Byte reg);
+    
+    /**
+     * Increments the CPU's PC by 1
+     * 
+     */
+    void inc_pc();
+
+    /**
+     * Jumps to the specified address by setting the new address to the CPU's PC 
+     *
+     * @param address The address to jump to
+     * 
+     */
+    void jump(Short address);
+
+    /**
+     * Read the next immediate 8-bit value, which is currently pointed to by CPU's PC. Increments PC after fetching
+     * 
+     * @return An 8-bit value from the address specified by PC
+     */
+    Byte read_imm8();
+       
     private:
     Short _merge_registers(Byte reg_A, Byte reg_B);
+    
 
 };
 
