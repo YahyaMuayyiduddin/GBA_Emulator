@@ -66,19 +66,25 @@ public:
      */
     Short get_16bitreg(Reg16 reg);
 
+    Byte get_8bitreg(Byte reg);
+
 
 
     void set_zero();
     bool get_zero();
+    void reset_zero();
 
     void set_subtract();
     bool get_subtract();
+    void reset_subtract();
 
     void set_h_carry();
     bool get_h_carry();
+    void reset_h_carry();
 
     void set_carry();
     bool get_carry();
+    void reset_carry();
     private:
     Short _merge_registers(Byte reg_A, Byte reg_B);
 

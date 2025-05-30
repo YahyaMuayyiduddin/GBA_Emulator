@@ -35,6 +35,7 @@ public:
         return *(internal_array + index);
     }
 
+
     Byte read(Short address)
     {
         if ((unsigned int)address >= max_size)

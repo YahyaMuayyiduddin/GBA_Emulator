@@ -24,8 +24,6 @@ Byte H;
 Byte L;
 
 
-
-
 int c_cycles;
 int m_cycles;
 
@@ -90,8 +88,39 @@ void CPU::set_16bitreg(Reg16 reg, Short data){
     
 }
 
+Byte CPU::get_8bitreg(Byte reg){
+    Byte value;
+     switch(reg){
+        case 0x0:
+            value = B;
+            break;
+        case 0x1:
+            value = C;
+            break;
+        case 0x2:
+            value = D;
+            break;
+        case 0x3:
+            value = E;
+            break;
+        case 0x4:
+            value = H;
+            break;
+        case 0x5:
+            value = L;
+            break;
+        case 0x6:
+            throw(reg);
+            break;
+        case 0x7:
+            value = A;
+            break;
+    }
+    return value;
+}
+
 Short CPU::get_16bitreg(Reg16 reg){
-    Short value = 0x00;
+    Short value = 0x0000;
     switch(reg){
         case Reg16::BC:
             value |= B;
@@ -137,6 +166,11 @@ bool CPU::get_zero()
     return zero_flag;
 }
 
+void CPU::reset_zero()
+{
+    F = F & 0x7F;
+}
+
 void CPU::set_subtract()
 {
     F = F | 64;
@@ -146,6 +180,11 @@ bool CPU::get_subtract()
 {
     bool zero_flag = extract_bit(F, 6);
     return zero_flag;
+}
+
+void CPU::reset_subtract()
+{
+    F = F & 0xBF;
 }
 
 void CPU::set_h_carry()
@@ -160,6 +199,11 @@ bool CPU::get_h_carry()
     return zero_flag;
 }
 
+void CPU::reset_h_carry()
+{
+    F = F & 0xDF;
+}
+
 void CPU::set_carry()
 {
     F = F | 16;
@@ -171,3 +215,6 @@ bool CPU::get_carry()
     return zero_flag;
 }
 
+void CPU::reset_carry(){
+    F = F & 0xEF;
+}

@@ -3,14 +3,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GB)
- 
-# set(SRCS cpu.cpp main.cpp bitw.cpp)
-set(SOURCES main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp)
 
-# set(HEADERS ${CMAKE_SOURCE_DIR}/include/Headers/bitw.hpp ${CMAKE_SOURCE_DIR}/include/Headers/cpu.hpp)
+set(SOURCES main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp instruction.cpp)
+set(SOURCES2 main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp instruction.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/include/Headers)
-
-# link_directories(${CMAKE_SOURCE_DIR}/include/Headers)
 
 add_executable(Gameboy ${SOURCES})
+
+find_package(SDL3 REQUIRED)
+
+include_directories(${CMAKE_SOURCE_DIR}/include/Headers)
+include_directories(${CMAKE_SOURCE_DIR}/libraries/SDL3.framework/Headers)
+
+target_link_libraries(Gameboy SDL3::SDL3)
+
+
