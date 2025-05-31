@@ -1,5 +1,8 @@
+#pragma once
+
 #include "bitw.hpp"
 #include "ram.hpp"
+
 
 class Bus{
 

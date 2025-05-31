@@ -7,7 +7,7 @@
 
 int clock_cycles;
 Ram ram{8000};
-CPU cpu;
+SharpSM83 cpu;
 GB_Program program{cpu,ram};
 
 

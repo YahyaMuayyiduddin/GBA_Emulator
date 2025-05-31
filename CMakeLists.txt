@@ -4,8 +4,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GB)
 
-set(SOURCES main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp instruction.cpp)
-set(SOURCES2 main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp instruction.cpp)
+set(SOURCES main.cpp cpu.cpp bitw.cpp ram.cpp gb_program.cpp bus.cpp)
+
 
 
 add_executable(Gameboy ${SOURCES})

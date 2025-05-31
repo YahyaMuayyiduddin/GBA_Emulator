@@ -7,7 +7,7 @@
 
 int clock_cycles;
 Ram ram{8000};
-CPU cpu;
+SharpSM83 cpu;
 GB_Program program{cpu,ram};
 
 
@@ -60,8 +60,8 @@ void dec_r16(Byte opcode){
 
 
 int main(){
-    program.cpu.PC = 0x00FF;
-    program.ram.write(0x88, 0x0100);
+    cpu.PC = 0x00FF;
+    ram.write(0x88, 0x0100);
     program.ram.write(0x13, 0x0101);
     program.inc_pc();
     ld_r16_imm16(0x21);
