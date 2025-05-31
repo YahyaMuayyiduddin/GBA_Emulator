@@ -6,8 +6,22 @@
 #include "bus.hpp"
 
 
+void test_daa(Ram& ram, Bus& bus, SharpSM83& cpu){
+    cpu.A = 0x7D;
+    cpu.daa(0x00);
+    // cpu.set_carry();
+    // cpu.set_h_carry();
+    cpu.set_subtract();
+    cpu.A = (0x4B);
+    cpu.daa(0x00);
+    std::cout << (int)(extract_high_nibble(cpu.A));
+    std::cout << (int)(extract_low_nibble(cpu.A)) << endl;
+    std::cout << (int)(cpu.A == 0x45);
 
 
+
+
+}
 
 using namespace std;
 
@@ -20,21 +34,8 @@ int main(){
     Bus bus{ram};
     SharpSM83 cpu{bus};
 
-    // cpu.PC = 0x00FF;
-    // ram.write(0x88, 0x0100);
-    // ram.write(0x13, 0x0101);
-    // cpu.inc_pc();
-    // cpu.ld_r16_imm16(0x21);
-    // std::cout << cpu.read_r16(0x02) << std::endl;
-    // cpu.A = 0xFF;
-    // cpu.ld_r16mem_a(0x21);
-    // std::cout << (int)cpu.bus.read_memory(0x1388) << endl;
-    cpu.A = 0x0E;
-    cpu.set_carry();
-    cpu.rra(0x00);
-    std::cout << (std::bitset<8>)cpu.A << endl;
-    std::cout << (int)cpu.get_carry() << endl;
-
+    test_daa(ram, bus, cpu);
+   
     // std::cout << (0xFF + (int8_t)0x80); 
     // ####
 //     CPU cpu;

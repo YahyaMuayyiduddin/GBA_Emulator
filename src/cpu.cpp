@@ -466,7 +466,7 @@ void SharpSM83::inc_r8(Byte opcode)
 {
     Byte destination = (opcode >> 3) & 0x07;
     Byte value = get_8bitreg(destination);
-    if (value + 1 == 0)
+    if (((value + 1) & 0xFF) == 0)
     {
         set_zero();
     }
@@ -491,7 +491,7 @@ void SharpSM83::dec_r8(Byte opcode)
 {
     Byte destination = (opcode >> 3) & 0x07;
     Byte value = get_8bitreg(destination);
-    if (value - 1 == 0)
+    if (((value - 1) & 0xFF) == 0)
     {
         set_zero();
     }
@@ -602,7 +602,7 @@ void SharpSM83::ccf(Byte opcode){
     }else{
         set_carry();
     }
-     reset_h_carry();
+    reset_h_carry();
     reset_subtract();
 }
 
@@ -610,4 +610,40 @@ void SharpSM83::scf(Byte opcode){
     set_carry();
     reset_h_carry();
     reset_subtract();
+}
+
+void SharpSM83::daa(Byte opcode){
+    Byte adjustment = 0x00;
+    bool set_c = false;
+    if(get_subtract()){
+        if(get_h_carry()){
+            adjustment |= 0x6;
+        }
+        if(get_carry()){
+            adjustment |= 0x60;
+        }
+        A -= adjustment;
+    }else{
+        if(get_h_carry() || (A & 0xF) > 0x9){
+            adjustment |= 0x6;
+        }
+        if(get_carry() || A > 0x99){
+            adjustment |= 0x60;
+            set_c = true;
+        }
+        A += adjustment;
+    }
+    if(set_c){
+        set_carry();
+    }else{
+        reset_carry();
+    }
+
+    reset_h_carry();
+    if (A == 0) {
+        set_zero();
+    } else {
+        reset_zero();  // Ensure it's reset if non-zero
+    }
+
 }
